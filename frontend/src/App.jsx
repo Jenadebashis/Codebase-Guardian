@@ -2,22 +2,11 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios';
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
-
-interface ApiResponse {
-  message: string;
-  data?: User[];
-}
-
 function App() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
-  const [serverStatus, setServerStatus] = useState<string>('');
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [serverStatus, setServerStatus] = useState('');
 
   // Test backend connection
   useEffect(() => {
@@ -36,8 +25,8 @@ function App() {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get<ApiResponse>('/api/users');
-      if (response.data.data) {
+      const response = await axios.get('/api/users');
+      if (response.data && response.data.data) {
         setUsers(response.data.data);
       }
     } catch (err) {
@@ -53,8 +42,10 @@ function App() {
     
     if (name && email) {
       try {
-        const response = await axios.post<{ data: User }>('/api/users', { name, email });
-        setUsers([...users, response.data.data]);
+        const response = await axios.post('/api/users', { name, email });
+        if (response.data && response.data.data) {
+          setUsers([...users, response.data.data]);
+        }
       } catch (err) {
         setError('Failed to add user. Make sure the backend server is running.');
       }
