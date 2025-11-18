@@ -5,11 +5,15 @@ const morgan = require('morgan');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+mongoose.connect(process.env.DATABASE_URL)
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.log(err));
 // Middleware
 app.use(helmet());
 app.use(cors({
