@@ -8,7 +8,7 @@ export const REGISTER_FAIL = 'REGISTER_FAIL';
 
 export const login = (username, password) => async dispatch => {
   try {
-    const res = await axios.post('http://localhost:5001/api/login', { username, password });
+    const res = await axios.post('http://localhost:5001/api/auth/login', { username, password });
     dispatch({
       type: LOGIN_SUCCESS,
       payload: res.data
@@ -23,7 +23,7 @@ export const login = (username, password) => async dispatch => {
 
 export const register = (username, password) => async dispatch => {
   try {
-    const res = await axios.post('http://localhost:5001/api/register', { username, password });
+    const res = await axios.post('http://localhost:5001/api/auth/register', { username, password });
     dispatch({
       type: REGISTER_SUCCESS,
       payload: res.data

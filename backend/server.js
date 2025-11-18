@@ -1,19 +1,19 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import bodyParser from 'body-parser';
+import { default as connectDB } from './config/db.js';
+import User from './model/user.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-mongoose.connect(process.env.DATABASE_URL)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log(err));
+connectDB();
 // Middleware
 app.use(helmet());
 app.use(cors({
@@ -46,57 +46,72 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Register a new user
-app.post('/api/register', async (req, res) => {
-  const { username, password } = req.body;
+// --- Register route (basic, production improvements advised)
+app.post("/api/auth/register", async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Username and password are required' });
+    if (!username || !password) {
+      return res.status(400).json({ error: "username and password required" });
+    }
+
+    // normalize username
+    const usernameNormalized = username.toLowerCase().trim();
+
+    // check existing user
+    const existing = await User.findOne({ username: usernameNormalized });
+    if (existing) {
+      return res.status(409).json({ error: "username already taken" });
+    }
+
+    // hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashed = await bcrypt.hash(password, salt);
+
+    // create user
+    const user = new User({
+      username: usernameNormalized,
+      password: hashed,
+    });
+
+    await user.save();
+
+    // never return password hash
+    return res.status(201).json({
+      msg: "user created",
+      user: { id: user._id, username: user.username, createdAt: user.createdAt },
+    });
+  } catch (err) {
+    console.error("Register error:", err);
+    return res.status(500).json({ error: "server error" });
   }
-
-  const existingUser = users.find(user => user.username === username);
-  if (existingUser) {
-    return res.status(400).json({ message: 'User already exists' });
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const user = { username, password: hashedPassword };
-  users.push(user);
-
-  res.status(201).json({ message: 'User registered successfully' });
 });
 
-// Login a user
-app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body;
+// --- Basic login route (returns simple success; add JWT/session for production)
+app.post("/api/auth/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) return res.status(400).json({ error: "username and password required" });
 
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Username and password are required' });
+    const user = await User.findOne({ username: username.toLowerCase().trim() });
+    if (!user) return res.status(401).json({ error: "invalid credentials" });
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(401).json({ error: "invalid credentials" });
+
+    // NOTE: replace with JWT/session in production
+    return res.json({ msg: "login successful", user: { id: user._id, username: user.username } });
+  } catch (err) {
+    console.error("Login error:", err);
+    return res.status(500).json({ error: "server error" });
   }
-
-  const user = users.find(user => user.username === username);
-  if (!user) {
-    return res.status(400).json({ message: 'Invalid credentials' });
-  }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(400).json({ message: 'Invalid credentials' });
-  }
-
-  const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET || 'your_jwt_secret', {
-    expiresIn: '1h'
-  });
-
-  res.json({ token });
 });
-
 
 // Basic API routes
 app.get('/api/users', (req, res) => {
   res.json({
     message: 'Users endpoint',
-    data: users.map(u => ({ username: u.username}))
+    data: users.map(u => ({ username: u.username }))
   });
 });
 
