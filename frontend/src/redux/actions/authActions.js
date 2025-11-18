@@ -1,4 +1,4 @@
-import api from 'utils/api';
+import api from "../../utils/api";
 
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAIL = 'LOGIN_FAIL';
