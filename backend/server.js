@@ -7,6 +7,7 @@ import bcrypt from 'bcryptjs';
 import bodyParser from 'body-parser';
 import { default as connectDB } from './config/db.js';
 import User from './model/user.js';
+import auth from './middleware/auth.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -24,9 +25,6 @@ app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-// In-memory user store (for demonstration purposes)
-const users = [];
 
 // Routes
 app.get('/', (req, res) => {
@@ -99,8 +97,23 @@ app.post("/api/auth/login", async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ error: "invalid credentials" });
 
-    // NOTE: replace with JWT/session in production
-    return res.json({ msg: "login successful", user: { id: user._id, username: user.username } });
+    // Create and sign a JWT
+    const payload = {
+      user: {
+        id: user.id,
+        username: user.username,
+      },
+    };
+
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' },
+      (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      }
+    );
   } catch (err) {
     console.error("Login error:", err);
     return res.status(500).json({ error: "server error" });
@@ -108,11 +121,14 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 // Basic API routes
-app.get('/api/users', (req, res) => {
-  res.json({
-    message: 'Users endpoint',
-    data: users.map(u => ({ username: u.username }))
-  });
+app.get('/api/users', auth, async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+    res.json(users);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
 });
 
 // Error handling middleware
