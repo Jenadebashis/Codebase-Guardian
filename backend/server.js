@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const bodyParser = require('body-parser');
 require('dotenv').config();
 
 const app = express();
@@ -16,6 +19,10 @@ app.use(cors({
 app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// In-memory user store (for demonstration purposes)
+const users = [];
 
 // Routes
 app.get('/', (req, res) => {
@@ -35,27 +42,57 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Register a new user
+app.post('/api/register', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required' });
+  }
+
+  const existingUser = users.find(user => user.username === username);
+  if (existingUser) {
+    return res.status(400).json({ message: 'User already exists' });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = { username, password: hashedPassword };
+  users.push(user);
+
+  res.status(201).json({ message: 'User registered successfully' });
+});
+
+// Login a user
+app.post('/api/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required' });
+  }
+
+  const user = users.find(user => user.username === username);
+  if (!user) {
+    return res.status(400).json({ message: 'Invalid credentials' });
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(400).json({ message: 'Invalid credentials' });
+  }
+
+  const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET || 'your_jwt_secret', {
+    expiresIn: '1h'
+  });
+
+  res.json({ token });
+});
+
+
 // Basic API routes
 app.get('/api/users', (req, res) => {
   res.json({
     message: 'Users endpoint',
-    data: [
-      { id: 1, name: 'John Doe', email: 'john@example.com' },
-      { id: 2, name: 'Jane Smith', email: 'jane@example.com' }
-    ]
-  });
-});
-
-app.post('/api/users', (req, res) => {
-  const { name, email } = req.body;
-  res.json({
-    message: 'User created successfully',
-    data: {
-      id: Date.now(),
-      name,
-      email,
-      createdAt: new Date().toISOString()
-    }
+    data: users.map(u => ({ username: u.username}))
   });
 });
 
