@@ -1,7 +1,5 @@
-import api from 'utils/api';
-
-export const GET_USERS_SUCCESS = 'GET_USERS_SUCCESS';
-export const GET_USERS_FAIL = 'GET_USERS_FAIL';
+import api from '../../utils/api';
+import { GET_USERS_SUCCESS, GET_USERS_FAIL } from './types';
 
 export const getUsers = () => async dispatch => {
   try {

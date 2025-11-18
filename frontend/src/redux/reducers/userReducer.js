@@ -1,4 +1,4 @@
-import { GET_USERS_SUCCESS, GET_USERS_FAIL } from '../actions/userActions';
+import { GET_USERS_SUCCESS, GET_USERS_FAIL } from '../actions/types';
 
 const initialState = {
   users: [],

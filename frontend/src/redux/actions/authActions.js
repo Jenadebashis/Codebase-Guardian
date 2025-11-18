@@ -1,11 +1,5 @@
-import api from 'utils/api';
-
-export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
-export const LOGIN_FAIL = 'LOGIN_FAIL';
-export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
-export const REGISTER_FAIL = 'REGISTER_FAIL';
-export const LOGOUT = 'LOGOUT';
-
+import api from '../../utils/api';
+import { LOGIN_SUCCESS, LOGIN_FAIL, REGISTER_SUCCESS, REGISTER_FAIL, LOGOUT } from './types';
 
 export const login = (username, password) => async dispatch => {
   try {
