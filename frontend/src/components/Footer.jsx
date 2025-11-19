@@ -10,4 +10,6 @@ const Footer = () => {
   );
 };
 
+// got a very good look man....
+
 export default Footer;
