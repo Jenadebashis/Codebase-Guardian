@@ -9,6 +9,8 @@ import { default as connectDB } from './config/db.js';
 import User from './model/user.js';
 import auth from './middleware/auth.js';
 import dotenv from 'dotenv';
+import scanRoutes from './routes/scanRoutes.js';
+
 dotenv.config();
 
 const app = express();
@@ -142,6 +144,8 @@ app.get('/api/users', auth, async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
+
+app.use('/api/scans', scanRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
