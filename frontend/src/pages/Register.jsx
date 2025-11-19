@@ -14,20 +14,22 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username</label>
-          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-        </div>
-        <div>
-          <label>Password</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        </div>
-        <button type="submit">Register</button>
-      </form>
-      {error && <p>{error.message}</p>}
+    <div className="flex items-center justify-center">
+      <div className="w-full max-w-md bg-surface p-8 rounded-xl-2 shadow-neon-lg">
+        <h2 className="text-3xl font-bold text-primary mb-6 text-center">Register</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="text-text-dim block mb-2">Username</label>
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full bg-bg border border-border rounded-lg p-3 text-text focus:outline-none focus:ring-2 focus:ring-primary" />
+          </div>
+          <div>
+            <label className="text-text-dim block mb-2">Password</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-bg border border-border rounded-lg p-3 text-text focus:outline-none focus:ring-2 focus:ring-primary" />
+          </div>
+          <button type="submit" className="w-full bg-primary text-bg font-bold py-3 rounded-lg hover:bg-primary-600 transition-colors">Register</button>
+        </form>
+        {error && <p className="mt-4 text-danger text-center">{error.message}</p>}
+      </div>
     </div>
   );
 };

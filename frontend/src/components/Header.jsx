@@ -12,34 +12,34 @@ const Header = () => {
   };
 
   const authLinks = (
-    <ul>
+    <ul className="flex items-center space-x-4">
       <li>
-        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/dashboard" className="text-text hover:text-primary transition-colors">Dashboard</Link>
       </li>
       <li>
-        <Link to="/users">Users</Link>
+        <Link to="/users" className="text-text hover:text-primary transition-colors">Users</Link>
       </li>
       <li>
-        <a href="#!" onClick={handleLogout}>Logout</a>
+        <a href="#!" onClick={handleLogout} className="text-text hover:text-primary transition-colors">Logout</a>
       </li>
     </ul>
   );
 
   const guestLinks = (
-    <ul>
+    <ul className="flex items-center space-x-4">
       <li>
-        <Link to="/login">Login</Link>
+        <Link to="/login" className="text-text hover:text-primary transition-colors">Login</Link>
       </li>
       <li>
-        <Link to="/register">Register</Link>
+        <Link to="/register" className="bg-primary text-bg font-bold py-2 px-4 rounded-lg hover:bg-primary-600 transition-colors">Register</Link>
       </li>
     </ul>
   );
 
   return (
-    <header>
-      <nav>
-        <Link to="/">My App</Link>
+    <header className="bg-surface border-b border-border shadow-neon-sm">
+      <nav className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+        <Link to="/" className="text-2xl font-bold text-primary">My App</Link>
         {isAuthenticated ? authLinks : guestLinks}
       </nav>
     </header>

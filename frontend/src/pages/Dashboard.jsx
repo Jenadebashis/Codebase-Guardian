@@ -33,25 +33,27 @@ const Dashboard = () => {
   }
 
   return (
-    <div>
-      {user ? (
-        <h2>Welcome, {user.username}!</h2>
-      ) : (
-        <h2>Welcome!</h2>
-      )}
-      <button onClick={handleLogout}>Logout</button>
-
-      <div>
-        <h3>Code Submission Area</h3>
-        {/* Placeholder for code submission component */}
-        <textarea placeholder="Enter your code here..."></textarea>
-        <button>Submit</button>
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
+        {user ? (
+          <h2 className="text-3xl font-bold text-primary">Welcome, {user.username}!</h2>
+        ) : (
+          <h2 className="text-3xl font-bold text-primary">Welcome!</h2>
+        )}
+        <button onClick={handleLogout} className="bg-danger text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-80 transition-colors">Logout</button>
       </div>
 
-      <div>
-        <h3>Scan History</h3>
+      <div className="bg-surface p-6 rounded-xl-2 shadow-neon-md">
+        <h3 className="text-2xl font-bold text-primary mb-4">Code Submission Area</h3>
+        {/* Placeholder for code submission component */}
+        <textarea className="w-full h-40 bg-bg border border-border rounded-lg p-4 text-text font-mono focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Enter your code here..."></textarea>
+        <button className="mt-4 bg-primary text-bg font-bold py-2 px-6 rounded-lg hover:bg-primary-600 transition-colors">Submit</button>
+      </div>
+
+      <div className="bg-surface p-6 rounded-xl-2 shadow-neon-md">
+        <h3 className="text-2xl font-bold text-primary mb-4">Scan History</h3>
         {/* Placeholder for scan history component */}
-        <p>No scans yet.</p>
+        <p className="text-text-dim">No scans yet.</p>
       </div>
     </div>
   );

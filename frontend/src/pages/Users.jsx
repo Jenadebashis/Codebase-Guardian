@@ -19,11 +19,14 @@ const Users = () => {
   }
 
   return (
-    <div>
-      <h2>Users</h2>
-      <ul>
+    <div className="bg-surface p-6 rounded-xl-2 shadow-neon-md">
+      <h2 className="text-3xl font-bold text-primary mb-6">Users</h2>
+      <ul className="space-y-4">
         {users.map(user => (
-          <li key={user._id}>{user.username}</li>
+          <li key={user._id} className="bg-bg border border-border p-4 rounded-lg flex justify-between items-center shadow-neon-sm">
+            <span className="text-text">{user.username}</span>
+            <span className="text-text-dim text-sm">{user._id}</span>
+          </li>
         ))}
       </ul>
     </div>
