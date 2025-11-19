@@ -120,6 +120,18 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
+// GET route to fetch logged-in user's data
+app.get('/api/auth/user', auth, async (req, res) => {
+    try {
+        // req.user is attached by the auth middleware
+        const user = await User.findById(req.user.id).select('-password');
+        res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 // Basic API routes
 app.get('/api/users', auth, async (req, res) => {
   try {
