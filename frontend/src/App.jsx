@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Users from './pages/Users';
+import ScanDetails from './pages/ScanDetails';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/users" element={<Users />} />
+          <Route path="/scan/:id" element={<ScanDetails />} />
         </Routes>
       </Layout>
     </Router>

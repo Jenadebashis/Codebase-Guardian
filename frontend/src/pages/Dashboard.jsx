@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import { logout } from '../redux/actions/authActions';
 import api from '../utils/api';
+import ScanHistory from '../components/ScanHistory';
 
 const Dashboard = () => {
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
@@ -50,11 +51,7 @@ const Dashboard = () => {
         <button className="mt-4 bg-primary text-bg font-bold py-2 px-6 rounded-lg hover:bg-primary-600 transition-colors">Submit</button>
       </div>
 
-      <div className="bg-surface p-6 rounded-xl-2 shadow-neon-md">
-        <h3 className="text-2xl font-bold text-primary mb-4">Scan History</h3>
-        {/* Placeholder for scan history component */}
-        <p className="text-text-dim">No scans yet.</p>
-      </div>
+      <ScanHistory />
     </div>
   );
 };

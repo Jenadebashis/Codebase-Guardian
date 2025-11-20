@@ -1,9 +1,10 @@
 import express from 'express';
-import { createScan } from '../controllers/scanController.js';
+import { createScan, getAllScans, getScanById } from '../controllers/scanController.js';
 import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.route('/').post(auth, createScan);
+router.route('/').post(auth, createScan).get(auth, getAllScans);
+router.route('/:id').get(auth, getScanById);
 
 export default router;
