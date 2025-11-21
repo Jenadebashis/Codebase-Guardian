@@ -6,19 +6,36 @@ console.log("raw env value:", JSON.stringify(process.env.GEMINI_API_KEY));
 console.log("present?:", !!process.env.GEMINI_API_KEY);
 
 async function run() {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // <- updated
-    const res = await model.generateContent("Say: Hello from Gemini 2.5 Flash.");
-    console.log("Raw response:", res);
-    if (res?.response?.text) {
-      console.log("Text:", res.response.text());
-    } else {
-      console.log("Check raw response above for output structure.");
-    }
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const contents = [
+      {
+        parts: [
+          { text: "SYSTEM: You are a professional security and code quality auditor specializing in Node.js and Express applications. Return strict JSON only." },
+          { text: "USER: Analyze this variable declaration: var x = 1;" }
+        ]
+      }
+    ];
+
+    // Debug BEFORE calling the SDK
+    console.log("DEBUG: contents type:", typeof contents, Array.isArray(contents));
+    console.log("DEBUG: contents preview:", JSON.stringify(contents, null, 2));
+
+    // If your SDK expects `contents` (not `messages`)
+    const result = await model.generateContent({ contents });
+
+    let rawText;
+    if (result?.response?.text) rawText = result.response.text();
+    else if (result?.output?.text) rawText = result.output.text;
+    else rawText = JSON.stringify(result);
+
+    console.log("AI RAW RESPONSE:", rawText);
+    return res.json({ ok: true, raw: rawText });
   } catch (err) {
-    console.error("API call failed:", err);
+    console.error("AI TEST ERROR:", err);
+    return res.status(500).json({ ok: false, error: String(err) });
   }
 }
 
