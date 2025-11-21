@@ -2,7 +2,8 @@
 import 'dotenv/config';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-console.log("KEY present?:", !!process.env.GEMINI_API_KEY);
+console.log("raw env value:", JSON.stringify(process.env.GEMINI_API_KEY));
+console.log("present?:", !!process.env.GEMINI_API_KEY);
 
 async function run() {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);

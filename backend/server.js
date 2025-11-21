@@ -10,6 +10,7 @@ import User from './model/user.js';
 import auth from './middleware/auth.js';
 import dotenv from 'dotenv';
 import scanRoutes from './routes/scanRoutes.js';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 dotenv.config();
 
@@ -142,6 +143,26 @@ app.get('/api/users', auth, async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
+  }
+});
+
+app.get("/api/test/ai-ping", async (req, res) => {
+  try {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash"  // or whatever model you're using
+    });
+
+    const result = await model.generateContent("What is the capital of France?");
+    const text = result.response.text();
+
+    console.log("AI RAW RESPONSE:", text);
+
+    res.json({ ok: true, text });
+  } catch (err) {
+    console.error("AI TEST ERROR:", err);
+    res.status(500).json({ error: "AI call failed" });
   }
 });
 
