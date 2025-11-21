@@ -148,6 +148,7 @@ app.get('/api/users', auth, async (req, res) => {
 
 
 app.get("/api/test/ai-ping-contents", async (req, res) => {
+  // this route tests the AI service integration and returns the raw response - my work for day 33 and 34 is done
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
