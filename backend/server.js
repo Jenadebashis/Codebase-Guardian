@@ -146,23 +146,38 @@ app.get('/api/users', auth, async (req, res) => {
   }
 });
 
-app.get("/api/test/ai-ping", async (req, res) => {
+
+app.get("/api/test/ai-ping-contents", async (req, res) => {
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash"  // or whatever model you're using
-    });
+    const contents = [
+      {
+        parts: [
+          { text: "SYSTEM: You are a professional security and code quality auditor specializing in Node.js and Express applications. Return strict JSON only." },
+          { text: "USER: Analyze this variable declaration: var x = 1;" }
+        ]
+      }
+    ];
 
-    const result = await model.generateContent("What is the capital of France?");
-    const text = result.response.text();
+    // Debug BEFORE calling the SDK
+    console.log("DEBUG: contents type:", typeof contents, Array.isArray(contents));
+    console.log("DEBUG: contents preview:", JSON.stringify(contents, null, 2));
 
-    console.log("AI RAW RESPONSE:", text);
+    // If your SDK expects `contents` (not `messages`)
+    const result = await model.generateContent({ contents });
 
-    res.json({ ok: true, text });
+    let rawText;
+    if (result?.response?.text) rawText = result.response.text();
+    else if (result?.output?.text) rawText = result.output.text;
+    else rawText = JSON.stringify(result);
+
+    console.log("AI RAW RESPONSE:", rawText);
+    return res.json({ ok: true, raw: rawText });
   } catch (err) {
     console.error("AI TEST ERROR:", err);
-    res.status(500).json({ error: "AI call failed" });
+    return res.status(500).json({ ok: false, error: String(err) });
   }
 });
 
