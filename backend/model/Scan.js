@@ -14,6 +14,22 @@ const scanSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  securityFindings: {
+    type: Array,
+    default: [],
+  },
+  bestPractices: {
+    type: Array,
+    default: [],
+  },
+  status: {
+    type: String,
+    enum: ['Pending', 'Complete', 'Failed'],
+    default: 'Pending',
+  },
+  errorMessage: {
+    type: String,
+  },
   timestamp: {
     type: Date,
     default: Date.now,

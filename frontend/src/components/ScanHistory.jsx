@@ -21,6 +21,19 @@ const ScanHistory = () => {
     fetchScans();
   }, []);
 
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'Complete':
+        return 'text-success';
+      case 'Failed':
+        return 'text-danger';
+      case 'Pending':
+        return 'text-warning';
+      default:
+        return 'text-text-dim';
+    }
+  };
+
   if (loading) {
     return <p className="text-text-dim">Loading scan history...</p>;
   }
@@ -40,6 +53,9 @@ const ScanHistory = () => {
                   Language
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-dim uppercase tracking-wider">
+                  Status
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-dim uppercase tracking-wider">
                   Snippet Preview
                 </th>
                 <th scope="col" className="relative px-6 py-3">
@@ -55,6 +71,9 @@ const ScanHistory = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-text">
                     {scan.language}
+                  </td>
+                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-semibold ${getStatusClass(scan.status)}`}>
+                    {scan.status}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-text-dim font-mono">
                     {scan.codeSnippet}
