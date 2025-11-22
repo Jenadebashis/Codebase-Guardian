@@ -55,7 +55,8 @@ const getAllScans = async (req, res) => {
         _id: scan._id,
         timestamp: scan.timestamp,
         language: scan.language,
-        codeSnippet: scan.codeSnippet.substring(0, 50) + (scan.codeSnippet.length > 50 ? '...' : '')
+        codeSnippet: scan.codeSnippet.substring(0, 50) + (scan.codeSnippet.length > 50 ? '...' : ''),
+        status: scan.status
     }));
 
     res.json(truncatedScans);

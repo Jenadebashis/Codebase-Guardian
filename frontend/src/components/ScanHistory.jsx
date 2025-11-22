@@ -5,7 +5,7 @@ import api from '../utils/api';
 const ScanHistory = () => {
   const [scans, setScans] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  console.log('Rendering ScanHistory component', {scans});
   useEffect(() => {
     const fetchScans = async () => {
       try {
