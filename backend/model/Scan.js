@@ -27,6 +27,9 @@ const scanSchema = new mongoose.Schema({
     enum: ['Pending', 'Complete', 'Failed'],
     default: 'Pending',
   },
+  errorMessage: {
+    type: String,
+  },
   timestamp: {
     type: Date,
     default: Date.now,
