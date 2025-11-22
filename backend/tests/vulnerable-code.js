@@ -23,9 +23,9 @@ export function getWeatherData() {
 }
 
 // 4. SQL Injection
-const db = require('../config/db');
+import db from '../config/db.js';
 
-async function getUser(username) {
+export async function getUser(username) {
   // Vulnerable to SQL injection
   const query = `SELECT * FROM users WHERE username = '${username}'`;
   const [rows] = await db.execute(query);

@@ -1,7 +1,7 @@
 // backend/services/aiServices.js
 import 'dotenv/config';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { hashPassword, executeCode, getWeatherData } from '../tests/vulnerable-code.js';
+import { hashPassword, executeCode, getWeatherData, getUser } from '../tests/vulnerable-code.js';
 
 async function scanCode(codeSource) {
   if (!process.env.GEMINI_API_KEY) {
@@ -101,7 +101,7 @@ Your responsibilities:
   };
 
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-2.5-flash",
     generationConfig: {
         responseMimeType: "application/json",
         responseSchema: responseSchema
@@ -147,6 +147,9 @@ async function runTests() {
   
     console.log('--- Testing getWeatherData ---');
     await scanCode(getWeatherData);
+
+    console.log('--- Testing getUser ---');
+    await scanCode(getUser('devash'));
   
   }
   
