@@ -1,25 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../utils/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { getScans } from '../../redux/actions/scanActions';
 
 const ScanHistory = () => {
-  const [scans, setScans] = useState([]);
-  const [loading, setLoading] = useState(true);
-  console.log('Rendering ScanHistory component', {scans});
-  useEffect(() => {
-    const fetchScans = async () => {
-      try {
-        const res = await api.get('/scans');
-        setScans(res.data);
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
-        setLoading(false);
-      }
-    };
+  const dispatch = useDispatch();
+  const { scans, loading } = useSelector((state) => state.scans);
 
-    fetchScans();
-  }, []);
+  useEffect(() => {
+    dispatch(getScans());
+  }, [dispatch]);
 
   const getStatusClass = (status) => {
     switch (status) {

@@ -5,3 +5,5 @@ export const REGISTER_FAIL = 'REGISTER_FAIL';
 export const LOGOUT = 'LOGOUT';
 export const GET_USERS_SUCCESS = 'GET_USERS_SUCCESS';
 export const GET_USERS_FAIL = 'GET_USERS_FAIL';
+export const GET_SCANS_SUCCESS = 'GET_SCANS_SUCCESS';
+export const GET_SCANS_FAIL = 'GET_SCANS_FAIL';
