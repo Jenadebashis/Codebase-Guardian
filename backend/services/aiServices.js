@@ -1,42 +1,102 @@
 // ApiTesting.js
 import 'dotenv/config';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createScan } from '../controllers/scanController.js'; // make sure path & extension are correct
 
-console.log("raw env value:", JSON.stringify(process.env.GEMINI_API_KEY));
-console.log("present?:", !!process.env.GEMINI_API_KEY);
+async function runSecurityAudit(codeSource) {
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error("Missing GEMINI_API_KEY in environment");
+  }
 
-async function run() {
-  try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const contents = [
+  const systemInstruction = `
+You are a Node.js/Express Security Expert.
+Your output must be ONLY a valid JSON object.
+
+Rules:
+- Do NOT output markdown, code fences, or prose.
+- Do NOT wrap JSON in \`\`\`.
+- Return exactly one JSON object.
+
+Your responsibilities:
+1. Identify vulnerabilities in the provided code based on the OWASP Top 10.
+2. Suggest best-practice refactoring for each issue.
+3. Include severity, impact, and likelihood ratings.
+4. Use this strict JSON format:
+
+{
+  "summary": {
+    "overview": "",
+    "risk_level": "",
+    "key_findings_count": 0
+  },
+  "issues": [
+    {
+      "id": "",
+      "title": "",
+      "owasp_category": "",
+      "location": {
+        "file": "",
+        "function": "",
+        "line_range": ""
+      },
+      "description": "",
+      "impact": "",
+      "likelihood": "",
+      "severity": "",
+      "evidence": "",
+      "recommendation": ""
+    }
+  ],
+  "refactor_plan": {
+    "strategy": "",
+    "steps": [""],
+    "code_examples": [
       {
-        parts: [
-          { text: "SYSTEM: You are a professional security and code quality auditor specializing in Node.js and Express applications. Return strict JSON only." },
-          { text: "USER: Analyze this variable declaration: var x = 1;" }
-        ]
+        "description": "",
+        "before": "",
+        "after": ""
       }
-    ];
+    ]
+  },
+  "assumptions": [],
+  "notes": []
+}
+`;
 
-    // Debug BEFORE calling the SDK
-    console.log("DEBUG: contents type:", typeof contents, Array.isArray(contents));
-    console.log("DEBUG: contents preview:", JSON.stringify(contents, null, 2));
+  // Normalize the input: function -> string, anything else -> String(...)
+  const codeSnippet =
+    typeof codeSource === 'function' ? codeSource.toString() : String(codeSource);
 
-    // If your SDK expects `contents` (not `messages`)
-    const result = await model.generateContent({ contents });
+  const contents = [
+    {
+      parts: [
+        { text: `SYSTEM: ${systemInstruction}` },
+        { text: `USER: Analyze this code:\n${codeSnippet}` }
+      ]
+    }
+  ];
 
-    let rawText;
-    if (result?.response?.text) rawText = result.response.text();
-    else if (result?.output?.text) rawText = result.output.text;
-    else rawText = JSON.stringify(result);
+  const result = await model.generateContent({ contents });
+  const rawText = result?.response?.text?.() || JSON.stringify(result);
 
-    console.log("AI RAW RESPONSE:", rawText);
-    return res.json({ ok: true, raw: rawText });
+  try {
+    const parsed = JSON.parse(rawText);
+    console.log("✅ JSON parsed successfully.");
+    console.dir(parsed, { depth: null });
+    return parsed;
   } catch (err) {
-    console.error("AI TEST ERROR:", err);
-    return res.status(500).json({ ok: false, error: String(err) });
+    console.error("❌ Invalid JSON output from model:");
+    console.error(rawText);
+    console.error("Parse error:", err.message);
+    return null;
   }
 }
 
-run();
+// Example: analyze the imported controller function
+runSecurityAudit(createScan).catch(console.error);
+
+// Also export it so you can use it elsewhere (e.g. in routes, CLI, tests)
+export { runSecurityAudit };

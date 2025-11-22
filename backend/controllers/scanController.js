@@ -1,4 +1,4 @@
-import Scan from '../models/Scan.js';
+import Scan from '../model/Scan.js';
 
 const createScan = async (req, res) => {
   try {
