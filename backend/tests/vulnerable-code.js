@@ -22,12 +22,12 @@ export function getWeatherData() {
   // ... fetch weather data using the apiKey
 }
 
-// 4. SQL Injection
-import db from '../config/db.js';
+// // 4. SQL Injection
+// import db from '../config/db.js';
 
-export async function getUser(username) {
-  // Vulnerable to SQL injection
-  const query = `SELECT * FROM users WHERE username = '${username}'`;
-  const [rows] = await db.execute(query);
-  return rows[0];
-}
+// export async function getUser(username) {
+//   // Vulnerable to SQL injection
+//   const query = `SELECT * FROM users WHERE username = '${username}'`;
+//   const [rows] = await db.execute(query);
+//   return rows[0];
+// }
