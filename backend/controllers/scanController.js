@@ -49,8 +49,9 @@ const getAllScans = async (req, res) => {
   try {
     const scans = await Scan.find({ userId: req.user.id })
       .sort({ timestamp: -1 })
-      .select('_id timestamp language codeSnippet');
+      .select('_id timestamp language codeSnippet status');
     
+    console.log("the value of scans is", {scans});  
     const truncatedScans = scans.map(scan => ({
         _id: scan._id,
         timestamp: scan.timestamp,
