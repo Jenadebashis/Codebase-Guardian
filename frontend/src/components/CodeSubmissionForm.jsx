@@ -27,7 +27,7 @@ const CodeSubmissionForm = () => {
           {loading ? 'Scanning Code, Please Wait...' : 'Submit Scan'}
         </button>
       </form>
-      {error && <p>Error: {error}</p>}
+      {error && <p>Error: {error.msg}</p>}
     </div>
   );
 };
