@@ -3,7 +3,7 @@ import { CREATE_SCAN_SUCCESS, CREATE_SCAN_FAIL, GET_SCANS_SUCCESS, GET_SCANS_FAI
 const initialState = {
   scans: [],
   loading: false,
-  error: {},
+  error: null,
 };
 
 export default function (state = initialState, action) {
