@@ -11,6 +11,7 @@ module.exports = {
         'primary': '#00ffcc',
         'secondary': '#ff00ff',
         'danger': '#ff3333',
+        'success': '#22c55e',
         'text': '#e0e0e0',
         'text-dim': '#808080',
         'border': '#333333',
