@@ -18,6 +18,7 @@ const ScanHistory = () => {
       case 'Failed':
         return 'text-danger';
       case 'Pending':
+      case 'In Progress':
         return 'text-warning';
       default:
         return 'text-text-dim';
