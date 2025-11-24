@@ -4,17 +4,24 @@ import { createScan } from '../redux/actions/scanActions';
 
 const CodeSubmissionForm = () => {
   const [codeSnippet, setCodeSnippet] = useState('');
+  const [language, setLanguage] = useState('javascript');
   const dispatch = useDispatch();
   const { loading, error } = useSelector(state => state.scans);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(createScan({ codeSnippet }));
+    dispatch(createScan({ codeSnippet, language }));
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
+        <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="java">Java</option>
+        </select>
+        <br />
         <textarea
           value={codeSnippet}
           onChange={(e) => setCodeSnippet(e.target.value)}
