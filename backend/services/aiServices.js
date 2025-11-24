@@ -138,23 +138,6 @@ Your responsibilities:
   }
 }
 
-async function runTests() {
-    console.log('--- Testing hashPassword ---');
-    await scanCode(hashPassword);
-  
-    console.log('--- Testing executeCode ---');
-    await scanCode(executeCode);
-  
-    console.log('--- Testing getWeatherData ---');
-    await scanCode(getWeatherData);
-
-    // console.log('--- Testing getUser ---');
-    // await scanCode(getUser('devash'));
-  
-  }
-  
-runTests().catch(console.error);
-
 
 // Also export it so you can use it elsewhere (e.g. in routes, CLI, tests)
 export { scanCode };

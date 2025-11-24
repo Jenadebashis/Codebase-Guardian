@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getScans } from '../../redux/actions/scanActions';
+import { getScans } from '../redux/actions/scanActions.js';
 
 const ScanHistory = () => {
   const dispatch = useDispatch();
