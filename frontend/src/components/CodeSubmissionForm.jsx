@@ -16,16 +16,14 @@ const CodeSubmissionForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('language', language);
-
     if (submissionType === 'file' && codeFile) {
+      const formData = new FormData();
+      formData.append('language', language);
       formData.append('codeFile', codeFile);
+      dispatch(createScan(formData, true));
     } else {
-      formData.append('codeSnippet', codeSnippet);
+      dispatch(createScan({ language, codeSnippet }, false));
     }
-    
-    dispatch(createScan(formData));
   };
 
   return (
