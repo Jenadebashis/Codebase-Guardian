@@ -3,12 +3,16 @@ import { CREATE_SCAN_SUCCESS, CREATE_SCAN_FAIL, GET_SCANS_SUCCESS, GET_SCANS_FAI
 
 export const createScan = (scanData) => async (dispatch) => {
   try {
+    // When scanData is a FormData object, axios will automatically set the
+    // Content-Type to multipart/form-data. When it's a plain object,
+    // it will use the default 'application/json' from api.js.
     const res = await api.post('/scans', scanData);
+
     dispatch({
       type: CREATE_SCAN_SUCCESS,
       payload: res.data,
     });
-    //This is not a react hook, so we can't use useNavigate here.
+    
     window.location.href = `/scan/${res.data._id}`;
   } catch (err) {
     dispatch({
