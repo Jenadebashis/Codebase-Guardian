@@ -1,17 +1,19 @@
 import express from 'express';
-import { createScan, getAllScans, getScanById } from '../controllers/scanController.js';
+import { createScan, getAllScans, getScanById, unifiedScanHandler } from '../controllers/scanController.js';
 import auth from '../middleware/auth.js';
+import upload from '../middleware/upload.js';
 import { body, validationResult } from 'express-validator';
 
 const router = express.Router();
 
-// Validation chain for creating a scan
+// Validation chain for creating a scan from text
 const createScanValidation = [
   body('codeSnippet')
     .isString().withMessage('Code snippet must be a string.')
     .isLength({ max: 500000 }).withMessage('Code snippet is too long.')
     .trim()
     .escape(),
+  body('language').isString().withMessage('Language must be a string.'),
 ];
 
 // Middleware to handle validation errors
@@ -23,10 +25,10 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-router.route('/')
-  .post(auth, createScanValidation, handleValidationErrors, createScan)
-  .get(auth, getAllScans);
+// Route for creating a scan from either raw text or file upload
+router.post('/', auth, upload.single('codeFile'), createScanValidation, handleValidationErrors, unifiedScanHandler);
 
-router.route('/:id').get(auth, getScanById);
+router.get('/', auth, getAllScans);
+router.get('/:id', auth, getScanById);
 
 export default router;

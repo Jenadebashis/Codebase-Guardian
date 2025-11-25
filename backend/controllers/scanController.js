@@ -1,8 +1,22 @@
 import Scan from '../model/Scan.js';
 import { scanCode } from '../services/aiServices.js';
 
-const createScan = async (req, res) => {
-  const { codeSnippet, language } = req.body;
+const unifiedScanHandler = async (req, res) => {
+  const { language } = req.body;
+  let codeSnippet;
+
+  if (req.file) {
+    // If a file is uploaded, use its content
+    codeSnippet = req.file.buffer.toString('utf8');
+  } else {
+    // Otherwise, use the code snippet from the request body
+    codeSnippet = req.body.codeSnippet;
+  }
+
+  // Basic validation - though express-validator should handle most of this
+  if (!codeSnippet) {
+    return res.status(400).json({ errors: [{ msg: 'No code snippet or file provided.' }] });
+  }
 
   const newScan = new Scan({
     userId: req.user.id,
@@ -14,6 +28,7 @@ const createScan = async (req, res) => {
   try {
     await newScan.save();
 
+    // The actual call to the AI service
     const aiResult = await scanCode(codeSnippet);
 
     if (!aiResult) {
@@ -23,6 +38,7 @@ const createScan = async (req, res) => {
       return res.status(500).send('Server Error: AI response was malformed.');
     }
 
+    // Update scan with AI results
     newScan.securityFindings = aiResult.issues || [];
     newScan.bestPractices = aiResult.refactor_plan ? [aiResult.refactor_plan] : [];
     newScan.status = 'Complete';
@@ -35,6 +51,7 @@ const createScan = async (req, res) => {
   } catch (err) {
     console.error(err.message);
     
+    // If anything goes wrong, update the scan status to 'Failed'
     newScan.status = 'Failed';
     newScan.errorMessage = err.message;
     await newScan.save().catch(saveErr => {
@@ -51,7 +68,6 @@ const getAllScans = async (req, res) => {
       .sort({ timestamp: -1 })
       .select('_id timestamp language codeSnippet status');
     
-    console.log("the value of scans is", {scans});  
     const truncatedScans = scans.map(scan => ({
         _id: scan._id,
         timestamp: scan.timestamp,
@@ -89,4 +105,4 @@ const getScanById = async (req, res) => {
   }
 };
 
-export { createScan, getAllScans, getScanById };
+export { unifiedScanHandler, getAllScans, getScanById };
